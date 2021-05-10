@@ -13,17 +13,18 @@ from scapy.all import Ether, IP, UDP, TCP
 from scapy.all import Ether, StrFixedLenField, XByteField, IntField
 from scapy.all import bind_layers
 import readline
+from myPPV import PPVheader
 
-class PPVheader(Packet):
-    name = "PPVheader"
-    fields_desc = [ StrFixedLenField("P", "P", length=1),
-                    StrFixedLenField("Four", "4", length=1),
-                    XByteField("version", 0x01),
-                    IntField("CTV", 0),
-                    IntField("PPV", 0),
-                    IntField("Id", 0)]
+# class PPVheader(Packet):
+#     name = "PPVheader"
+#     fields_desc = [ StrFixedLenField("P", "P", length=1),
+#                     StrFixedLenField("Four", "4", length=1),
+#                     XByteField("version", 0x01),
+#                     IntField("CTV", 0),
+#                     IntField("PPV", 0),
+#                     IntField("Id", 0)]
 
-bind_layers(Ether, PPVheader, type=0x1234)
+# bind_layers(Ether, PPVheader, type=0x1234)
 
 class NumParseError(Exception):
     pass
@@ -91,9 +92,11 @@ def main():
             pkt = pkt / IP(dst=addr) / TCP(dport=1234, sport=random.randint(49152,65535))
 
             pkt = pkt / PPVheader(
-                                              Id=id,
-                                              CTV=ctv,
-                                              PPV=ppv)
+                                Id=id,
+                                CTV=ctv,
+                                PPV=ppv)
+            pkt = pkt/' '
+            pkt = pkt/ str('CTV=' + str(ctv) + ', PPV=' + str(ppv) + ', Id=' + str(id))
             pkt = pkt/' '
 
             pkt.show()
