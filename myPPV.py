@@ -17,5 +17,5 @@ class PPVheader(Packet):
 
 
 bind_layers(Ether, IP, type=TYPE_IPV4)
-bind_layers(IP, PPVheader, pid=TYPE_IPV4)
+bind_layers(IP, PPVheader)
 

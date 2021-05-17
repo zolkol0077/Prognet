@@ -45,8 +45,8 @@ struct metadata {
 
 struct headers {
     ethernet_t   ethernet;
-    myPPV_t      myPPV;
     ipv4_t       ipv4;
+    myPPV_t      myPPV;
 }
 
 /*************************************************************************
@@ -106,7 +106,7 @@ control MyIngress(inout headers hdr,
         standard_metadata.egress_spec = port;
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
         hdr.ethernet.dstAddr = dstAddr;
-        hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
+        // hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
     
     table ipv4_lpm {
@@ -152,7 +152,7 @@ control MyComputeChecksum(inout headers  hdr, inout metadata meta) {
 	update_checksum(
 	    hdr.ipv4.isValid(),
             { hdr.ipv4.version,
-	      hdr.ipv4.ihl,
+              hdr.ipv4.ihl,
               hdr.ipv4.diffserv,
               hdr.ipv4.totalLen,
               hdr.ipv4.identification,
@@ -175,6 +175,7 @@ control MyDeparser(packet_out packet, in headers hdr) {
     apply {
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv4);
+        packet.emit(hdr.myPPV);
     }
 }
 

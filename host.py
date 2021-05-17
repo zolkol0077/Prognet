@@ -89,19 +89,22 @@ def main():
 
 
             pkt =  Ether(src=get_if_hwaddr(iface), dst='ff:ff:ff:ff:ff:ff')
-            pkt = pkt / IP(dst=addr) / TCP(dport=1234, sport=random.randint(49152,65535))
+            pkt = pkt / IP(dst=addr)
 
             pkt = pkt / PPVheader(
                                 Id=id,
                                 CTV=ctv,
                                 PPV=ppv)
             pkt = pkt/' '
-            pkt = pkt/ str('CTV=' + str(ctv) + ', PPV=' + str(ppv) + ', Id=' + str(id))
-            pkt = pkt/' '
+            # pkt = pkt/ str('CTV=' + str(ctv) + ', PPV=' + str(ppv) + ', Id=' + str(id))
+            # pkt = pkt/' '
 
+            print "show1-----------------"
             pkt.show()
             print "-----------------"
-            pkt.show2()
+            # print "len(pkt) = ", len(pkt)
+            # print "show2-----------------"
+            # pkt.show2()
 
             # resp = srp1(pkt, iface=iface, timeout=1, verbose=False)
             sendp(pkt, iface=iface, verbose=False)  

@@ -8,7 +8,7 @@ from scapy.all import Packet, IPOption
 from scapy.all import ShortField, IntField, LongField, BitField, FieldListField, FieldLenField
 from scapy.all import IP, TCP, UDP, Raw
 from scapy.layers.inet import _IPOption_HDR
-from myPPV import PPVheader
+from myPPV import *
 
 
 def get_if():
@@ -25,10 +25,13 @@ def get_if():
 
 def handle_pkt(pkt):
 
-    print "got a packet"
-    pkt.show2()
-#    hexdump(pkt)
-#        print "len(pkt) = ", len(pkt)
+    print "got a packet."
+    print "show1 : "
+    pkt.show()
+    # print "show2 : "
+    # pkt.show2()
+    # hexdump(pkt)
+    # print "len(pkt) = ", len(pkt)
     sys.stdout.flush()
 
 
