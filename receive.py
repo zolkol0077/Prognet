@@ -28,10 +28,6 @@ def handle_pkt(pkt):
     print "got a packet."
     print "show1 : "
     pkt.show()
-    # print "show2 : "
-    # pkt.show2()
-    # hexdump(pkt)
-    # print "len(pkt) = ", len(pkt)
     sys.stdout.flush()
 
 

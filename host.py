@@ -15,16 +15,6 @@ from scapy.all import bind_layers
 import readline
 from myPPV import PPVheader
 
-# class PPVheader(Packet):
-#     name = "PPVheader"
-#     fields_desc = [ StrFixedLenField("P", "P", length=1),
-#                     StrFixedLenField("Four", "4", length=1),
-#                     XByteField("version", 0x01),
-#                     IntField("CTV", 0),
-#                     IntField("PPV", 0),
-#                     IntField("Id", 0)]
-
-# bind_layers(Ether, PPVheader, type=0x1234)
 
 class NumParseError(Exception):
     pass
@@ -72,14 +62,8 @@ def main():
     addr = socket.gethostbyname("10.0.2.2")
     iface = get_if()
 
-    
-
     print "sending on interface {} to IP addr {}".format(iface, str(addr))
-   
-#    hexdump(pkt)
-#    print "len(pkt) = ", len(pkt)
 
-    # iface = 'eth0'
     while True:
         try:
             
@@ -94,7 +78,8 @@ def main():
             pkt = pkt / PPVheader(
                                 Id=id,
                                 CTV=ctv,
-                                PPV=ppv)
+                                PPV=ppv,
+                                Debug=6)
             pkt = pkt/' '
             # pkt = pkt/ str('CTV=' + str(ctv) + ', PPV=' + str(ppv) + ', Id=' + str(id))
             # pkt = pkt/' '
@@ -102,23 +87,9 @@ def main():
             print "show1-----------------"
             pkt.show()
             print "-----------------"
-            # print "len(pkt) = ", len(pkt)
-            # print "show2-----------------"
-            # pkt.show2()
 
-            # resp = srp1(pkt, iface=iface, timeout=1, verbose=False)
             sendp(pkt, iface=iface, verbose=False)  
 
-            
-            # if resp:
-            #     pPVheader=resp[PPVheader]
-            #     if pPVheader:
-
-            #         print pPVheader.result
-            #     else:
-            #         print "cannot find PPVheader in the packet"
-            # else:
-            #     print "Didn't receive response"
         except Exception as error:
             print "--------------------------tesa------------------"
             print error

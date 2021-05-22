@@ -22,6 +22,7 @@ header myPPV_t {
     bit<8> flow_id;
     bit<8> ctv;
     bit<8> ppv;
+    bit<8> debug;
 }
 
 header ipv4_t {
@@ -106,7 +107,7 @@ control MyIngress(inout headers hdr,
         standard_metadata.egress_spec = port;
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
         hdr.ethernet.dstAddr = dstAddr;
-        // hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
+        hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
     
     table ipv4_lpm {
@@ -128,6 +129,8 @@ control MyIngress(inout headers hdr,
             // Process only non-tunneled IPv4 packets
             ipv4_lpm.apply();
         }
+
+        hdr.myPPV.debug = 4;
 
         
     }

@@ -6,12 +6,10 @@ TYPE_IPV4 = 0x800
 
 class PPVheader(Packet):
     name = "PPVheader"
-    fields_desc = [ StrFixedLenField("P", "P", length=1),
-                    StrFixedLenField("Four", "4", length=1),
-                    XByteField("version", 0x01),
-                    IntField("CTV", 0),
-                    IntField("PPV", 0),
-                    IntField("Id", 0)]
+    fields_desc = [ ShortField("Id", 0),
+                    ShortField("PPV", 0),
+                    ShortField("CTV", 0),
+                    ShortField("Debug", 0)]
     def mysummary(self):
         return self.sprintf("CTV=%CTV%, PPV=%PPV%, Id=%Id%")
 
