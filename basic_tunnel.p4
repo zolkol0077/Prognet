@@ -130,7 +130,7 @@ control MyIngress(inout headers hdr,
             ipv4_lpm.apply();
         }
 
-        hdr.myPPV.debug = 4;
+        hdr.myPPV.debug = 4; //Changes the hdr.myPPV.ppv
 
         
     }
