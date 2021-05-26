@@ -67,7 +67,8 @@ def main():
     while True:
         try:
             
-            id = random.randint(1,3)
+            # id = random.randint(0,2)
+            id = 0
             ctv = random.randint(3,7)
             ppv = random.randint(1,10)
 
@@ -79,7 +80,8 @@ def main():
                                 Id=id,
                                 CTV=ctv,
                                 PPV=ppv,
-                                Debug=6)
+                                Debug=6,
+                                Debug2=6)
             pkt = pkt/' '
             # pkt = pkt/ str('CTV=' + str(ctv) + ', PPV=' + str(ppv) + ', Id=' + str(id))
             # pkt = pkt/' '

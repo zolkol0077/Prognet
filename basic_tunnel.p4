@@ -18,11 +18,13 @@ header ethernet_t {
     bit<16>   etherType;
 }
 
+
 header myPPV_t {
-    bit<8> flow_id;
-    bit<8> ctv;
-    bit<8> ppv;
-    bit<8> debug;
+    bit<16> flow_id;
+    bit<16> ctv;
+    bit<16> ppv;
+    bit<16> debug;
+    bit<16> debug2;
 }
 
 header ipv4_t {
@@ -99,6 +101,15 @@ control MyVerifyChecksum(inout headers hdr, inout metadata meta) {
 control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
+
+    register<bit<8>>(3) flow_id_violation;
+    register<bit<48>>(3) violation_time;
+    register<bit<16>>(1) cnt;
+    bit<8> val;
+    bit<8> val2;
+    bit<48> time;
+    bit<16> dtime;
+
     action drop() {
         mark_to_drop(standard_metadata);
     }
@@ -122,15 +133,46 @@ control MyIngress(inout headers hdr,
         size = 1024;
         default_action = drop();
     }
-    
+
+    action reset_register(bit<16> a) {
+        flow_id_violation.write((bit<32>)a, 0);
+        violation_time.write((bit<32>)a, standard_metadata.ingress_global_timestamp);
+        hdr.myPPV.debug =  a;
+        return;
+    }
+
 
     apply {
+
+        violation_time.read(time, (bit<32>)hdr.myPPV.flow_id);
+        bit<48> interval = standard_metadata.ingress_global_timestamp - time;
+        if (interval > 2000000 ){ //val gt 50
+            reset_register(hdr.myPPV.flow_id);
+            hdr.myPPV.debug2 = interval[21:6];
+            // bit<16>local_cnt;
+            // cnt.read(local_cnt, 0);
+            // hdr.myPPV.debug = local_cnt;
+            // local_cnt = local_cnt + 1;
+            // cnt.write(0, local_cnt);
+
+
+
+        } else {
+            flow_id_violation.read(val, (bit<32>)hdr.myPPV.flow_id);
+            hdr.myPPV.debug = (bit<16>)val;
+            hdr.myPPV.debug2 = interval[21:6];
+
+        }
+
         if (hdr.ipv4.isValid() ) {
             // Process only non-tunneled IPv4 packets
             ipv4_lpm.apply();
         }
-
-        hdr.myPPV.debug = 4; //Changes the hdr.myPPV.ppv
+        if (hdr.myPPV.ctv < hdr.myPPV.ppv){ //PPV kisebb CTV            
+            flow_id_violation.read(val, (bit<32>)hdr.myPPV.flow_id);
+            val = val + 1;
+            flow_id_violation.write((bit<32>)hdr.myPPV.flow_id, val);
+        }
 
         
     }
