@@ -4,8 +4,8 @@
 
 const bit<16> TYPE_IPV4 = 0x800;
 const bit<32> NUMBER_OF_IDS = 1024;
-const bit<8> VIOLATION_THRESHOLD = 20;
-const bit<48> RESET_INTERVAL = 2000000;
+const bit<8> VIOLATION_THRESHOLD = 10;
+const bit<48> RESET_INTERVAL = 5000000;
 
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
