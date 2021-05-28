@@ -24,11 +24,11 @@ def get_if():
     return iface
 
 def handle_pkt(pkt):
-
     print "got a packet."
     print "show1 : "
     pkt.show()
     sys.stdout.flush()
+
 
 
 def main():
