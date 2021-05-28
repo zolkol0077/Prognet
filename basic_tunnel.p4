@@ -3,6 +3,9 @@
 #include <v1model.p4>
 
 const bit<16> TYPE_IPV4 = 0x800;
+const bit<32> NUMBER_OF_IDS = 1024;
+const bit<8> VIOLATION_THRESHOLD = 20;
+const bit<48> RESET_INTERVAL = 2000000;
 
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
@@ -102,11 +105,10 @@ control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
 
-    register<bit<8>>(3) flow_id_violation;
-    register<bit<48>>(3) violation_time;
-    register<bit<16>>(1) cnt;
+    register<bit<8>>(NUMBER_OF_IDS) flow_id_violation;
+    register<bit<48>>(NUMBER_OF_IDS) violation_time;
+    register<bit<1>>(NUMBER_OF_IDS) is_flow_id_blocked;
     bit<8> val;
-    bit<8> val2;
     bit<48> time;
     bit<16> dtime;
 
@@ -146,29 +148,26 @@ control MyIngress(inout headers hdr,
 
         violation_time.read(time, (bit<32>)hdr.myPPV.flow_id);
         bit<48> interval = standard_metadata.ingress_global_timestamp - time;
-        if (interval > 2000000 ){ //val gt 50
+        if (interval > RESET_INTERVAL ){
+            flow_id_violation.read(val,(bit<32>)hdr.myPPV.flow_id);
+            if (val > VIOLATION_THRESHOLD){
+                is_flow_id_blocked.write((bit<32>)hdr.myPPV.flow_id, 1);
+            }
             reset_register(hdr.myPPV.flow_id);
-            hdr.myPPV.debug2 = interval[21:6];
-            // bit<16>local_cnt;
-            // cnt.read(local_cnt, 0);
-            // hdr.myPPV.debug = local_cnt;
-            // local_cnt = local_cnt + 1;
-            // cnt.write(0, local_cnt);
-
-
-
         } else {
             flow_id_violation.read(val, (bit<32>)hdr.myPPV.flow_id);
             hdr.myPPV.debug = (bit<16>)val;
-            hdr.myPPV.debug2 = interval[21:6];
-
         }
+
+        bit<1> boolean;
+        is_flow_id_blocked.read(boolean, (bit<32>)hdr.myPPV.flow_id);
+        hdr.myPPV.debug2 = (bit<16>)boolean;
 
         if (hdr.ipv4.isValid() ) {
             // Process only non-tunneled IPv4 packets
             ipv4_lpm.apply();
         }
-        if (hdr.myPPV.ctv < hdr.myPPV.ppv){ //PPV kisebb CTV            
+        if (hdr.myPPV.ctv < hdr.myPPV.ppv){     
             flow_id_violation.read(val, (bit<32>)hdr.myPPV.flow_id);
             val = val + 1;
             flow_id_violation.write((bit<32>)hdr.myPPV.flow_id, val);
