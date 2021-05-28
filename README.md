@@ -57,7 +57,8 @@ For more information you can use `python host.py -h`
 
 
 ```text
-usage: host.py [-h] GOOD NEUTRAL BAD Configure the number and the kind of data flows in the test run. positional arguments:
+usage: host.py [-h] GOOD NEUTRAL BAD Configure the number and the kind of data flows in the test run.
+Positional arguments:
 
   GOOD        an integer that tells the program how many flows to create with
 
